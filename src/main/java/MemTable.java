@@ -30,7 +30,7 @@ public class MemTable {
 
                 //上面是写入过程
                 this.state = TableState.free;
-                this.memTable.clear();
+                this.clear();
                 return true;
             }catch (Exception e){
                 return false;
@@ -38,15 +38,19 @@ public class MemTable {
         });
     }
 
-    public TableState getState() {
+    public synchronized TableState getState() {
         return state;
     }
 
-    public void setState(TableState state) {
+    public synchronized void setState(TableState state) {
         this.state = state;
     }
 
     public Future<Boolean> getTask() {
         return task;
+    }
+
+    public void clear(){
+        this.memTable.clear();
     }
 }
