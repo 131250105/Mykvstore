@@ -153,7 +153,8 @@ public class MyTestHDFSConn {
             hdfsFile = Config.HDFS_URL + hdfsFile;
         }
         Configuration conf = new Configuration();
-        FileSystem fs = FileSystem.get(URI.create(hdfsFile), conf);
+//        FileSystem fs = FileSystem.get(URI.create(hdfsFile), conf);
+        FileSystem  fs = FileSystem.newInstance(URI.create(hdfsFile), conf);
         // check if the file exists
         Path path = new Path(hdfsFile);
         if (fs.exists(path)) {
