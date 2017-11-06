@@ -8,7 +8,7 @@ public class ReplicaTable {
 
     private TableState state = TableState.free;
 
-    private ArrayList<byte[]> table = new ArrayList<>(1000);
+    private ArrayList<byte[]> table = new ArrayList<>(2500);
 
     public ArrayList<byte[]> getTable() {
         return table;

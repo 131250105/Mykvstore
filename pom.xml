@@ -105,6 +105,15 @@
             <artifactId>hadoop-hdfs</artifactId>
             <version>${hadoop.version}</version>
         </dependency>
+
+        <dependency>
+            <groupId>cn.helium</groupId>
+            <artifactId>kvstore</artifactId>
+            <version>1.0-SNAPSHOT</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/original-kvstore-1.0-SNAPSHOT.jar</systemPath>
+        </dependency>
+
     </dependencies>
 
 

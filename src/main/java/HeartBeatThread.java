@@ -5,9 +5,9 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Queue;
 
 /**
  * Created by zy812818
@@ -21,14 +21,9 @@ public class HeartBeatThread implements Runnable {
 
     private boolean coditioan = true;
 
-    //落盘时用
-    private MemTable perTable;
+    private Queue<ReplicaTable> replicas;
 
-    private ReplicaTable replica;
-    //以防主服务器在落盘时挂掉
-    private ReplicaTable perReplica;
-
-    private Gson gson = new Gson();
+    private MyProcessor processor;
 
     @Override
     public void run() {
@@ -42,13 +37,7 @@ public class HeartBeatThread implements Runnable {
                     continue;
                     //主服务器挂了,要落盘，并且承担主服务器的备份任务
                 else if (KvStoreConfig.getServersNum() < Config.INIT_SERVER_NUM) {
-                    //先转换格式
-                    perTable = new MemTable();
-                    addToPerMemTable(replica.getTable());
-                    if (perReplica != null)
-                        addToPerMemTable(perReplica.getTable());
-                    //此处将memTable落盘
-
+//                    this.save();
                     //更换心跳对象
                     obj = (RpcServer.getRpcServerId() + 1) % 3;
                 }
@@ -56,24 +45,34 @@ public class HeartBeatThread implements Runnable {
         }
     }
 
-    public void setReplica(ReplicaTable replica) {
-        this.replica = replica;
+    public void setReplicas(Queue<ReplicaTable> replicas) {
+        this.replicas = replicas;
     }
 
-    public void setPerReplica(ReplicaTable perReplica) {
-        this.perReplica = perReplica;
-    }
+//    public void save() {
+//        StringBuilder sb = new StringBuilder();
+//
+//        ReplicaTable replicaTable = null;
+//        while ((replicaTable = replicas.poll()) != null) {
+//            for (byte[] bytes : replicaTable.getTable()) {
+//                int keyLength = 0;
+//                for (int i = 0; i < bytes.length; i++) {
+//                    if (bytes[i] != -1) {
+//                        keyLength++;
+//                        sb.append(bytes[i]);
+//                    } else {
+//                        break;
+//                    }
+//                }
+//                byte[] value = new byte[bytes.length - keyLength - 1];
+//                System.arraycopy(bytes, keyLength + 1, value, 0, value.length);
+//                sb.setLength(0);
+//                processor.dealSelf(sb.toString(), value);
+//            }
+//        }
+//    }
 
-
-    public void addToPerMemTable(List<byte[]> data) {
-        for (byte[] b : data) {
-
-            Map<String, Map<String, String>> map = gson.fromJson(new String(b), new TypeToken<Map<String, Map<String, String>>>() {
-            }.getType());//这是的new String是个问题，可以直接排序
-
-            for(String s:map.keySet()){
-                perTable.put(s,b);
-            }
-        }
+    public void setProcessor(MyProcessor processor) {
+        this.processor = processor;
     }
 }

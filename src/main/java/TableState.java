@@ -4,5 +4,5 @@
  **/
 public enum TableState {
 
-    in_per,free
+    pre_per,free,in_per
 }
